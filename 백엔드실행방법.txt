@@ -1,0 +1,23 @@
+백엔드 개발서버 실행방법
+
+zsh 콘솔 실행
+python -m venv venv (python 3.9버전으로 가상환경 생성)
+
+source venv/bin/activate (맥OS)
+venv/venv/Scripts/activate (윈도우)
+
+pip install -r requirements.txt
+
+vim ~/.zshrc
+
+‘’’
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+‘’’
+붙여넣고 :wq로 저장
+
+cd election
+cat pickle.tar* | tar xvf -
+cd ..
+python manage.py runserver
