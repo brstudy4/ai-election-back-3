@@ -10,6 +10,12 @@ import numpy as np
 from sentence_transformers import SentenceTransformer, util
 import joblib
 import pickle
+from hanspell import spell_checker
+from symspellpy_ko import KoSymSpell, Verbosity
+
+
+sym_spell = KoSymSpell()
+sym_spell.load_korean_dictionary(decompose_korean=True, load_bigrams=True)
 
 
 def index(request):
@@ -59,6 +65,18 @@ def initial_func():
         pickle.dump(corpus, f)
 
 
+def correct_spelling(str):
+    re = spell_checker.check(str)
+    tx = re.checked
+
+    for x in sym_spell.lookup_compound(tx, max_edit_distance=2):
+        text1 = x.term
+
+    #################################
+    corrected_str = [tx]  # 맞춤법이 틀린게 있으면 text1을 넣고 아니면 tx
+    return corrected_str
+
+
 def sentence_search(request, keyword):
     print(keyword, '시작')
     with open("election/embedder.pickle", "rb") as fi:
@@ -71,7 +89,11 @@ def sentence_search(request, keyword):
     print(keyword, '끝')
 
     top_k = 10
+
+    keyword = correct_spelling(keyword)
+
     print(keyword, 'keyword')
+
     for query in [keyword]:
         query_embedding = embedder.encode(
             query, convert_to_tensor=True)
